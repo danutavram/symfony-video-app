@@ -13,7 +13,7 @@ class CategoryTreeFrontPage extends CategoryTreeAbstract
     public $html_4 = '">';
     public $html_5 = '</a>';
     public $html_6 = '</li>';
-    public $html_7 = '</;>';
+    public $html_7 = '</ul>';
     public $slugger;
     public $mainParentName;
     public $mainParentId;
@@ -59,5 +59,17 @@ class CategoryTreeFrontPage extends CategoryTreeAbstract
                 'name' => $this->categoriesArrayFromDb[$key]['name']
             ];
         }
+    }
+
+    public function getChildIds(int $parent): array
+    {
+        static $ids = [];
+        foreach($this->categoriesArrayFromDb as $val) {
+            if($val['parent_id'] == $parent) {
+                $ids[] = $val['id'] . ',';
+                $this->getChildIds($val['id']);
+            }
+        }
+        return $ids;
     }
 }

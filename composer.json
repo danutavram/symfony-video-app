@@ -13,6 +13,7 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "*",
+        "knplabs/knp-paginator-bundle": "*",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "7.0.*",
         "symfony/console": "7.0.*",
@@ -21,6 +22,7 @@
         "symfony/form": "7.0.*",
         "symfony/framework-bundle": "7.0.*",
         "symfony/runtime": "7.0.*",
+        "symfony/translation": "7.0.*",
         "symfony/twig-bundle": "7.0.*",
         "symfony/validator": "7.0.*",
         "symfony/var-dumper": "7.0.*",
@@ -79,7 +81,12 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "*",
+        "phpunit/phpunit": "^9.5",
+        "symfony/browser-kit": "7.0.*",
+        "symfony/css-selector": "7.0.*",
         "symfony/maker-bundle": "^1.56",
+        "symfony/panther": "^2.1",
+        "symfony/phpunit-bridge": "^7.0",
         "symfony/stopwatch": "7.0.*",
         "symfony/web-profiler-bundle": "7.0.*"
     }

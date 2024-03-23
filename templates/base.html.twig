@@ -41,11 +41,12 @@
         </h5>
 
         <form
-          method="POST"
+          method="GET"
           class="form-inline my-0 mr-md-auto"
           action="{{ path('search_results') }}"
         >
           <input
+            name="query"
             class="form-control mr-sm-2"
             type="search"
             placeholder="video title"

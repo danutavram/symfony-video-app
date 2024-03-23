@@ -36,3 +36,8 @@ yarn-error.log
 /assets
 /public/assets
 .vscode
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+/tests
