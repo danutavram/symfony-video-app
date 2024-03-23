@@ -11,16 +11,19 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Utils\CategoryTreeAdminList;
 use App\Utils\CategoryTreeAdminOptionList;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 #[Route('/admin')]
 
 class AdminController extends AbstractController
 {
     private $em;
+    private $session;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, SessionInterface $session)
     {
         $this->em = $em;
+        $this->session = $session;
     }
 
     #[Route('/', name: 'admin_main_page')]
@@ -29,7 +32,7 @@ class AdminController extends AbstractController
         return $this->render('admin/my_profile.html.twig');
     }
 
-    #[Route('/categories', name: 'categories', methods:['GET', 'POST'])]
+    #[Route('/su/categories', name: 'categories', methods:['GET', 'POST'])]
     public function categories(CategoryTreeAdminList $categories, Request $request): Response
     {
         $categories->getCategoryList($categories->buildTree());
@@ -53,7 +56,7 @@ class AdminController extends AbstractController
         ]);
     }
     
-    #[Route('/edit-category/{id}', name: 'edit_category', methods:['GET', 'POST'])]
+    #[Route('/su/edit-category/{id}', name: 'edit_category', methods:['GET', 'POST'])]
     public function editCategory(Category $category, Request $request): Response
     {
 
@@ -74,7 +77,7 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/delete-category/{id}', name: 'delete_category')]
+    #[Route('/su/delete-category/{id}', name: 'delete_category')]
     public function deleteCategory(Category $category): Response
     {
         
@@ -89,13 +92,13 @@ class AdminController extends AbstractController
         return $this->render('admin/videos.html.twig');
     }
 
-    #[Route('/upload-video', name: 'upload_video')]
+    #[Route('/su/upload-video', name: 'upload_video')]
     public function uploadVideo(): Response
     {
         return $this->render('admin/upload_video.html.twig');
     }
 
-    #[Route('/users', name: 'users')]
+    #[Route('/su/users', name: 'users')]
     public function users(): Response
     {
         return $this->render('admin/users.html.twig');
@@ -103,6 +106,8 @@ class AdminController extends AbstractController
 
     public function getAllCategories(CategoryTreeAdminOptionList $categories, $editedCategory = null)
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         $categories->getCategoryList($categories->buildTree());
         return $this->render('admin/_all_categories.html.twig', [
             'categories' => $categories,

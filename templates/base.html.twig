@@ -63,14 +63,19 @@
               controller("App\\Controller\\FrontController::mainCategories")
             )
           }}
+          {% if app.user %}
+            
           <a class="p-2 text-dark" href="{{path('admin_main_page')}}">My account</a>
+          {% endif %}
         </nav>
+        {% if not app.user %}
         <a class="btn btn-outline-primary mr-2" href="{{ path('pricing') }}"
-          >Sign up</a
+        >Sign up</a
         >
         <a class="btn btn-outline-primary" href="{{ path('login') }}"
-          >Sign in</a
+        >Sign in</a
         >
+        {% endif %}
       </div>
       {% endblock %} {% block main %} {% endblock %} {% block footer_links %}
       <footer class="pt-4 my-md-5 pt-md-5 border-top">

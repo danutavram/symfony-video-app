@@ -20,6 +20,7 @@ Encore
     //     config.useBuiltIns = 'usage';
     //     config.corejs = 3;
     // })
+    
 ;
 
 module.exports = Encore.getWebpackConfig();

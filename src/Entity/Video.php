@@ -27,6 +27,7 @@ class Video
     private ?int $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'videos')]
+    #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?Category $category = null;
 
     public function getId(): ?int
