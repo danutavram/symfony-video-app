@@ -18,12 +18,10 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class AdminController extends AbstractController
 {
     private $em;
-    private $session;
 
-    public function __construct(EntityManagerInterface $em, SessionInterface $session)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-        $this->session = $session;
     }
 
     #[Route('/', name: 'admin_main_page')]

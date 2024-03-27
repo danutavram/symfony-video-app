@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Form\UserType;
+use App\Repository\VideoRepository;
 use App\Utils\CategoryTreeFrontPage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -22,14 +25,10 @@ class FrontController extends AbstractController
 {
 
     private $em;
-    private $tokenStorage;
-    private $session;
 
-    public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage, SessionInterface $session)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
-        $this->tokenStorage = $tokenStorage;
-        $this->session = $session;
     }
 
     #[Route('/', name: 'main_page')]
@@ -51,10 +50,12 @@ class FrontController extends AbstractController
         ]);
     }
 
-    #[Route('/video-details', name: 'video_details')]
-    public function videoDetails(): Response
+    #[Route('/video-details/{video}', name: 'video_details')]
+    public function videoDetails($video, VideoRepository $repo): Response
     {
-        return $this->render('front/video_details.html.twig');
+        return $this->render('front/video_details.html.twig', [
+            'video'=> $repo->videoDetails($video)
+        ]);
     }
 
     #[Route('/search-results/{page}', methods: ['GET'], defaults:['page' => '1'], name: 'search_results')]
@@ -80,32 +81,34 @@ class FrontController extends AbstractController
         return $this->render('front/pricing.html.twig');
     }
 
+
+
     #[Route('/register', name: 'register')]
-    public function register(Request $request, UserPasswordHasherInterface $password_hasher): Response
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, SessionInterface $session): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) { 
-            $user->setName($request->request->get('user')['name']);
-            $user->setLastName($request->request->get('user')['last_name']);
-            $user->setEmail($request->request->get('user')['email']);
-            $password = $password_hasher->hashPassword($user, $request->request->get('user')['password']['first']);
-            $user->setPassword($password);
+            $user = $form->getData();
             $user->setRoles(['ROLE_USER']);
-
+            $password = $passwordHasher->hashPassword($user, $user->getPassword());
+            $user->setPassword($password);
+    
             $this->em->persist($user);
             $this->em->flush();
-
-            $this->loginUserAutomatically($user, $password);
-
-            return $this->redirectToRoute('admin_main_page');
+    
+            return new RedirectResponse($this->generateUrl('admin_main_page'));
         }
+    
         return $this->render('front/register.html.twig', [
             'form' => $form->createView()
         ]);
     }
+    
+    
+    
 
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $helper): Response
@@ -115,17 +118,6 @@ class FrontController extends AbstractController
         ]);
     }
 
-    public function loginUserAutomatically($user, $password)
-    {
-        $token = new UsernamePasswordToken(
-            $user,
-            $password,
-            $user->getRoles()
-        );
-
-        $this->tokenStorage->setToken($token);
-        $this->session->set('_security_main', serialize($token));
-    }
 
     #[Route('/logout', name: 'logout')]
     public function logout(): void
@@ -137,6 +129,24 @@ class FrontController extends AbstractController
     public function payment(): Response
     {
         return $this->render('front/payment.html.twig');
+    }
+
+    #[Route(path: '/new-comment/{video}', name: 'new_comment', methods: ['POST'])]
+    public function newComment(Video $video, Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        if (!empty(trim($request->request->get('comment')))) {
+            $comment = new Comment;
+            $comment->setContent($request->request->get('comment'));
+            $comment->setUser($this->getUser());
+            $comment->setVideo($video);
+            
+            $this->em->persist($comment);
+            $this->em->flush();
+        }
+        return $this->redirectToRoute('video_details', [
+            'video'=>$video->getId()
+        ]);
     }
 
     public function mainCategories()
