@@ -16,7 +16,8 @@ class Video
 {
     public const videoForNotLoggedIn = 113716040; // vimeo id
     public const VimeoPath = 'https://player.vimeo.com/video/';
-
+    public const perPage = 5; // for pagination
+  
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -38,9 +39,19 @@ class Video
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'video')]
     private Collection $comments;
 
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'likedVideos')]
+    #[ORM\JoinTable(name: 'likes')]
+    private Collection $userThatLike;
+
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'dislikedVideos')]
+    #[ORM\JoinTable(name: 'dislikes')]
+    private Collection $usersThatDontLike;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->userThatLike = new ArrayCollection();
+        $this->usersThatDontLike = new ArrayCollection();
     }
 
     #[ORM\OneToMany(mappedBy: 'video')]
@@ -132,6 +143,54 @@ class Video
                 $comment->setVideo(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUserThatLike(): Collection
+    {
+        return $this->userThatLike;
+    }
+
+    public function addUserThatLike(User $userThatLike): static
+    {
+        if (!$this->userThatLike->contains($userThatLike)) {
+            $this->userThatLike->add($userThatLike);
+        }
+
+        return $this;
+    }
+
+    public function removeUserThatLike(User $userThatLike): static
+    {
+        $this->userThatLike->removeElement($userThatLike);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsersThatDontLike(): Collection
+    {
+        return $this->usersThatDontLike;
+    }
+
+    public function addUsersThatDontLike(User $usersThatDontLike): static
+    {
+        if (!$this->usersThatDontLike->contains($usersThatDontLike)) {
+            $this->usersThatDontLike->add($usersThatDontLike);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersThatDontLike(User $usersThatDontLike): static
+    {
+        $this->usersThatDontLike->removeElement($usersThatDontLike);
 
         return $this;
     }

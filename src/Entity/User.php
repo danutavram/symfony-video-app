@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -47,6 +49,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $vimeo_api_key = null;
+
+    #[ORM\ManyToMany(targetEntity: Video::class, mappedBy: 'userThatLike')]
+    #[ORM\JoinTable(name: 'likes')]
+    private Collection $likedVideos;
+
+    #[ORM\ManyToMany(targetEntity: Video::class, mappedBy: 'usersThatDontLike')]
+    #[ORM\JoinTable(name: 'dislikes')]
+    private Collection $dislikedVideos;
+
+    public function __construct()
+    {
+        $this->likedVideos = new ArrayCollection();
+        $this->dislikedVideos = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -155,6 +171,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVimeoApiKey(?string $vimeo_api_key): static
     {
         $this->vimeo_api_key = $vimeo_api_key;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Video>
+     */
+    public function getLikedVideos(): Collection
+    {
+        return $this->likedVideos;
+    }
+
+    public function addLikedVideo(Video $likedVideo): static
+    {
+        if (!$this->likedVideos->contains($likedVideo)) {
+            $this->likedVideos->add($likedVideo);
+            $likedVideo->addUserThatLike($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLikedVideo(Video $likedVideo): static
+    {
+        if ($this->likedVideos->removeElement($likedVideo)) {
+            $likedVideo->removeUserThatLike($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Video>
+     */
+    public function getDislikedVideos(): Collection
+    {
+        return $this->dislikedVideos;
+    }
+
+    public function addDislikedVideo(Video $dislikedVideo): static
+    {
+        if (!$this->dislikedVideos->contains($dislikedVideo)) {
+            $this->dislikedVideos->add($dislikedVideo);
+            $dislikedVideo->addUsersThatDontLike($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDislikedVideo(Video $dislikedVideo): static
+    {
+        if ($this->dislikedVideos->removeElement($dislikedVideo)) {
+            $dislikedVideo->removeUsersThatDontLike($this);
+        }
 
         return $this;
     }

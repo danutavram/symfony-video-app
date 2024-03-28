@@ -8,6 +8,8 @@ Encore
     .setPublicPath('/assets')
     .addStyleEntry('css/dashboard', ['./assets/css/dashboard.css'])
     .addStyleEntry('css/login', ['./assets/css/login.css'])
+    .addEntry('js/likes', './assets/js/likes.js')
+    .addStyleEntry('css/likes', ['./assets/css/likes.css'])
     // .enableStimulusBridge('./assets/controllers.json').splitEntryChunks()
     .enableSingleRuntimeChunk()
     // .enableBuildNotifications()
