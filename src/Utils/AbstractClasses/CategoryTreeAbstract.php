@@ -42,14 +42,14 @@ abstract class CategoryTreeAbstract
     }
 
     private function getCategories(): array
-{
-    if (self::$dbconnection) {
-        return self::$dbconnection;
-    } else {
-        $conn = $this->em->getConnection();
-        $sql = "SELECT * FROM categories";
-        $stmt = $conn->query($sql);
-        return self::$dbconnection = $stmt->fetchAll(\PDO::FETCH_ASSOC); // Utilizează \PDO::FETCH_ASSOC pentru a obține un array asociativ
+    {
+        if (self::$dbconnection) {
+            return self::$dbconnection;
+        } else {
+            $conn = $this->em->getConnection();
+            $sql = "SELECT * FROM categories";
+            $stmt = $conn->executeQuery($sql); // Înlocuiește query() cu executeQuery()
+            return self::$dbconnection = $stmt->fetchAllAssociative(); // Utilizează fetchAllAssociative() pentru a obține un array asociativ
+        }
     }
-}
 }

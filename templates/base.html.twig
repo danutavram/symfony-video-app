@@ -119,17 +119,22 @@
       {% endblock %}
     </div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{ asset('assets/js/jquery.js') }}"></script>
-    <script src="{{ asset('assets/js/popper.js') }}"></script>
-    <script src="{{ asset('assets/js/bootstrap.js') }}"></script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{{asset('assets/js/jquery.js')}}"></script>
+<script src="{{asset('assets/js/popper.js')}}"></script>
+<script src="{{asset('assets/js/bootstrap.js')}}"></script>
+<script src="{{asset('assets/runtime.js')}}"></script>
 
-    <script>
-      $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-      });
-    </script>
-    {% block customjavascripts %}{% endblock %}
+    
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+</script>
+
+{% block customjavascript %}
+{{ encore_entry_script_tags('js/likes') }}
+{% endblock %}
   </body>
 </html>

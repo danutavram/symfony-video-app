@@ -41,7 +41,7 @@ class Video
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'likedVideos')]
     #[ORM\JoinTable(name: 'likes')]
-    private Collection $userThatLike;
+    private Collection $usersThatLike;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'dislikedVideos')]
     #[ORM\JoinTable(name: 'dislikes')]
@@ -50,12 +50,9 @@ class Video
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->userThatLike = new ArrayCollection();
+        $this->usersThatLike = new ArrayCollection();
         $this->usersThatDontLike = new ArrayCollection();
     }
-
-    #[ORM\OneToMany(mappedBy: 'video')]
-
 
     public function getId(): ?int
     {
@@ -67,7 +64,7 @@ class Video
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -79,18 +76,20 @@ class Video
         return $this->path;
     }
 
-    public function getVimeoId($user): ?string
-    {
-        if ($user) {
-            return $this->path;
-        } else return self::VimeoPath . self::videoForNotLoggedIn;
-    }
-
-    public function setPath(string $path): static
+    public function setPath(string $path): self
     {
         $this->path = $path;
 
         return $this;
+    }
+
+    public function getVimeoId($user): ?string
+    {
+        if($user)
+        {
+            return $this->path;
+        }
+       else return self::VimeoPath.self::videoForNotLoggedIn;
     }
 
     public function getDuration(): ?int
@@ -98,7 +97,7 @@ class Video
         return $this->duration;
     }
 
-    public function setDuration(?int $duration): static
+    public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
 
@@ -110,7 +109,7 @@ class Video
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(?Category $category): self
     {
         $this->category = $category;
 
@@ -118,26 +117,27 @@ class Video
     }
 
     /**
-     * @return Collection<int, Comment>
+     * @return Collection|Comment[]
      */
     public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    public function addComment(Comment $comment): static
+    public function addComment(Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
+            $this->comments[] = $comment;
             $comment->setVideo($this);
         }
 
         return $this;
     }
 
-    public function removeComment(Comment $comment): static
+    public function removeComment(Comment $comment): self
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
             // set the owning side to null (unless already changed)
             if ($comment->getVideo() === $this) {
                 $comment->setVideo(null);
@@ -148,49 +148,53 @@ class Video
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection|User[]
      */
-    public function getUserThatLike(): Collection
+    public function getUsersThatLike(): Collection
     {
-        return $this->userThatLike;
+        return $this->usersThatLike;
     }
 
-    public function addUserThatLike(User $userThatLike): static
+    public function addUsersThatLike(User $usersThatLike): self
     {
-        if (!$this->userThatLike->contains($userThatLike)) {
-            $this->userThatLike->add($userThatLike);
+        if (!$this->usersThatLike->contains($usersThatLike)) {
+            $this->usersThatLike[] = $usersThatLike;
         }
 
         return $this;
     }
 
-    public function removeUserThatLike(User $userThatLike): static
+    public function removeUsersThatLike(User $usersThatLike): self
     {
-        $this->userThatLike->removeElement($userThatLike);
+        if ($this->usersThatLike->contains($usersThatLike)) {
+            $this->usersThatLike->removeElement($usersThatLike);
+        }
 
         return $this;
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection|User[]
      */
     public function getUsersThatDontLike(): Collection
     {
         return $this->usersThatDontLike;
     }
 
-    public function addUsersThatDontLike(User $usersThatDontLike): static
+    public function addUsersThatDontLike(User $usersThatDontLike): self
     {
         if (!$this->usersThatDontLike->contains($usersThatDontLike)) {
-            $this->usersThatDontLike->add($usersThatDontLike);
+            $this->usersThatDontLike[] = $usersThatDontLike;
         }
 
         return $this;
     }
 
-    public function removeUsersThatDontLike(User $usersThatDontLike): static
+    public function removeUsersThatDontLike(User $usersThatDontLike): self
     {
-        $this->usersThatDontLike->removeElement($usersThatDontLike);
+        if ($this->usersThatDontLike->contains($usersThatDontLike)) {
+            $this->usersThatDontLike->removeElement($usersThatDontLike);
+        }
 
         return $this;
     }

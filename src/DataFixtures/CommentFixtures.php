@@ -12,7 +12,7 @@ use App\DataFixtures\UserFixtures;
 
 class CommentFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         foreach($this->CommentData() as [$content, $user, $video, $created_at])
         {

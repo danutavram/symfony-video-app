@@ -2,27 +2,21 @@
 
 namespace App\Controller;
 
+use App\Controller\Traits\Likes;
 use App\Entity\Category;
 use App\Entity\Comment;
-use App\Entity\User;
 use App\Entity\Video;
-use App\Form\UserType;
 use App\Repository\VideoRepository;
 use App\Utils\CategoryTreeFrontPage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class FrontController extends AbstractController
 {
+    use Likes;
 
     private $em;
 
@@ -81,50 +75,6 @@ class FrontController extends AbstractController
         return $this->render('front/pricing.html.twig');
     }
 
-
-
-    #[Route('/register', name: 'register')]
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, SessionInterface $session): Response
-    {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
-            $user->setRoles(['ROLE_USER']);
-            $password = $passwordHasher->hashPassword($user, $user->getPassword());
-            $user->setPassword($password);
-
-            $this->em->persist($user);
-            $this->em->flush();
-
-            return new RedirectResponse($this->generateUrl('admin_main_page'));
-        }
-
-        return $this->render('front/register.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-
-
-
-
-    #[Route('/login', name: 'login')]
-    public function login(AuthenticationUtils $helper): Response
-    {
-        return $this->render('front/login.html.twig', [
-            'error' => $helper->getLastAuthenticationError()
-        ]);
-    }
-
-
-    #[Route('/logout', name: 'logout')]
-    public function logout(): void
-    {
-        throw new \Exception('This should never be reached!');
-    }
-
     #[Route('/payment', name: 'payment')]
     public function payment(): Response
     {
@@ -155,6 +105,7 @@ class FrontController extends AbstractController
     #[Route(path: '/video-list/{video}/undodislike', name: 'undo_dislike_video', methods: ['POST'])]
     public function toggleLikesAjax(Video $video, Request $request)
     {
+
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         switch ($request->get('_route')) {
@@ -178,45 +129,6 @@ class FrontController extends AbstractController
         return $this->json(['action' => $result, 'id' => $video->getId()]);
     }
 
-    private function likeVideo($video)
-    {
-        $user = $this->em->getRepository(User::class)->find($this->getUser());
-        $user->addLikedVideo($video);
-
-        $this->em->persist($user);
-        $this->em->flush();
-        return 'liked';
-    }
-
-    private function dislikeVideo($video)
-    {
-        $user = $this->em->getRepository(User::class)->find($this->getUser());
-        $user->addDislikedVideo($video);
-
-        $this->em->persist($user);
-        $this->em->flush();
-        return 'disliked';
-    }
-
-    private function undoLikeVideo($video)
-    {
-        $user = $this->em->getRepository(User::class)->find($this->getUser());
-        $user->removeLikedVideo($video);
-
-        $this->em->persist($user);
-        $this->em->flush();
-        return 'undo liked';
-    }
-
-    private function undoDislikeVideo($video)
-    {
-        $user = $this->em->getRepository(User::class)->find($this->getUser());
-        $user->removeDislikedVideo($video);
-
-        $this->em->persist($user);
-        $this->em->flush();
-        return 'undo disliked';
-    }
 
     public function mainCategories()
     {
