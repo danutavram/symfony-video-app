@@ -11,11 +11,11 @@
   <div class="card-deck mb-3 text-center">
     <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">Free</h4>
+        <h4 class="my-0 font-weight-normal">{{ name[0]|capitalize }}</h4>
       </div>
       <div class="card-body">
         <h1 class="card-title pricing-card-title">
-          $0 <small class="text-muted">/ mo</small>
+          ${{ price[name[0]] }} <small class="text-muted">/ mo</small>
         </h1>
         <ul class="list-unstyled mt-3 mb-4">
           <li>Access for one month</li>
@@ -23,7 +23,7 @@
         </ul>
         <a
           role="button"
-          href="{{ path('register') }}"
+          href="{{ path('register', {'plan': name[0]}) }}"
           class="btn btn-lg btn-block btn-outline-primary"
           >Sign up for free</a
         >
@@ -31,11 +31,11 @@
     </div>
     <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">Pro</h4>
+        <h4 class="my-0 font-weight-normal">{{ name[1]|capitalize}}</h4>
       </div>
       <div class="card-body">
         <h1 class="card-title pricing-card-title">
-          $15 <small class="text-muted">/ mo</small>
+          ${{ price[name[1]] }} <small class="text-muted">/ mo</small>
         </h1>
         <ul class="list-unstyled mt-3 mb-4">
           <li>Unlimited access</li>
@@ -43,9 +43,9 @@
           <li>No ads on videos</li>
           <li>Help center access</li>
         </ul>
-        <a
+        <a  
           role="button"
-          href="{{ path('register') }}"
+          href="{{ path('register', {'plan': name[1]}) }}"
           class="btn btn-lg btn-block btn-primary"
           >Get started</a
         >
@@ -53,11 +53,11 @@
     </div>
     <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">Enterprise</h4>
+        <h4 class="my-0 font-weight-normal">{{ name[2]|capitalize}}</h4>
       </div>
       <div class="card-body">
         <h1 class="card-title pricing-card-title">
-          $29 <small class="text-muted">/ mo</small>
+          ${{ price[name[2]] }} <small class="text-muted">/ mo</small>
         </h1>
         <ul class="list-unstyled mt-3 mb-4">
           <li>Unlimited access</li>
@@ -68,7 +68,7 @@
         </ul>
         <a
           role="button"
-          href="{{ path('register') }}"
+          href="{{ path('register', {'plan': name[2]}) }}"
           class="btn btn-lg btn-block btn-primary"
           >Contact us</a
         >

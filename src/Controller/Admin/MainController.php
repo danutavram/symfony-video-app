@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\CategoryTreeAdminOptionList;
 use App\Entity\Video;
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -24,8 +25,31 @@ class MainController extends AbstractController
     #[Route('/', name: 'admin_main_page')]
     public function index(): Response
     {
-        return $this->render('admin/my_profile.html.twig');
+        $user = $this->getUser();
+        $subscription = $user instanceof User ? $user->getSubscription() : null;
+
+        return $this->render('admin/my_profile.html.twig', [
+            'subscription' => $subscription
+        ]);
     }
+
+    #[Route('/cancel-plan', name: 'cancel_plan')]
+    public function cancelPlan()
+    {
+        $user = $this->em->getRepository(User::class)->find($this->getUser());
+
+        $subscription = $user->getSubscription();
+        $subscription->setValidTo(new DateTime());
+        $subscription->setPaymentStatus(null);
+        $subscription->setPlan('canceled');
+
+        $this->em->persist($user);
+        $this->em->persist($subscription);
+        $this->em->flush();
+
+        return $this->redirectToRoute('admin_main_page');
+    }
+
     #[Route('/videos', name: 'videos')]
     public function videos(): Response
     {

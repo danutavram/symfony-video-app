@@ -58,6 +58,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinTable(name: 'dislikes')]
     private Collection $dislikedVideos;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private ?Subscription $subscription = null;
+
     public function __construct()
     {
         $this->likedVideos = new ArrayCollection();
@@ -230,5 +233,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-}
 
+    public function getSubscription(): ?Subscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?Subscription $subscription): static
+    {
+        $this->subscription = $subscription;
+
+        return $this;
+    }
+}
