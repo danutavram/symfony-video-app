@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Utils\CategoryTreeAdminList;
 use Symfony\Component\HttpFoundation\Request;
 
-#[Route('/admin')]
+#[Route('/admin/su/')]
 class CategoriesController extends AbstractController
 {
     private $em;
@@ -21,7 +21,7 @@ class CategoriesController extends AbstractController
         $this->em = $em;
     }
 
-    #[Route('/su/categories', name: 'categories', methods: ['GET', 'POST'])]
+    #[Route('categories', name: 'categories', methods: ['GET', 'POST'])]
     public function categories(CategoryTreeAdminList $categories, Request $request): Response
     {
         $categories->getCategoryList($categories->buildTree());
@@ -44,7 +44,7 @@ class CategoriesController extends AbstractController
             'category' => $category
         ]);
     }
-    #[Route('/su/edit-category/{id}', name: 'edit_category', methods: ['GET', 'POST'])]
+    #[Route('edit-category/{id}', name: 'edit_category', methods: ['GET', 'POST'])]
     public function editCategory(Category $category, Request $request): Response
     {
 
@@ -65,7 +65,7 @@ class CategoriesController extends AbstractController
         ]);
     }
 
-    #[Route('/su/delete-category/{id}', name: 'delete_category')]
+    #[Route('delete-category/{id}', name: 'delete_category')]
     public function deleteCategory(Category $category): Response
     {
 
