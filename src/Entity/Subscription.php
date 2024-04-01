@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SubscriptionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use PhpParser\Node\NullableType;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
 #[ORM\Table('subscriptions')]
@@ -52,8 +53,8 @@ class Subscription
     #[ORM\Column(length: 45, nullable: true)]
     private ?string $payment_status = null;
 
-    #[ORM\Column]
-    private ?bool $free_plan_used = null;
+    #[ORM\Column(type:'boolean', nullable: true)]
+    private ?bool $free_plan_used;
 
     public function getId(): ?int
     {
@@ -96,12 +97,12 @@ class Subscription
         return $this;
     }
 
-    public function isFreePlanUsed(): ?bool
+    public function getFreePlanUsed(): ?bool
     {
         return $this->free_plan_used;
     }
 
-    public function setFreePlanUsed(bool $free_plan_used): static
+    public function setFreePlanUsed(?bool $free_plan_used): static
     {
         $this->free_plan_used = $free_plan_used;
 

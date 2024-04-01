@@ -73,12 +73,6 @@ class FrontController extends AbstractController
         ]);
     }
 
-    #[Route('/payment', name: 'payment')]
-    public function payment(): Response
-    {
-        return $this->render('front/payment.html.twig');
-    }
-
     #[Route(path: '/new-comment/{video}', name: 'new_comment', methods: ['POST'])]
     public function newComment(Video $video, Request $request)
     {
