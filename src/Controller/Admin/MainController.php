@@ -88,32 +88,26 @@ class MainController extends AbstractController
     }
 
     #[Route('/videos', name: 'videos')]
-    public function videos(): Response
+    public function videos(CategoryTreeAdminOptionList $categories): Response
     {
         if ($this->isGranted('ROLE_ADMIN')) {
-            $videos = $this->em->getRepository(Video::class)->findAll();
+            $categories->getCategoryList($categories->buildTree());
+            $videos = $this->em->getRepository(Video::class)->findBy([], ['title' => 'ASC']);
         } else {
+            $categories = null;
             $user = $this->getUser();
 
             if ($user instanceof User && method_exists($user, 'getLikedVideos')) {
+                $categories = null;
                 $videos = $user->getLikedVideos();
             } else {
-                $videos = $this->em->getRepository(Video::class)->findAll();
+                $videos = $this->em->getRepository(Video::class)->findBy([], ['title' => 'ASC']);
             }
         }
 
         return $this->render('admin/videos.html.twig', [
-            'videos' => $videos
-        ]);
-    }
-    public function getAllCategories(CategoryTreeAdminOptionList $categories, $editedCategory = null)
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
-        $categories->getCategoryList($categories->buildTree());
-        return $this->render('admin/_all_categories.html.twig', [
-            'categories' => $categories,
-            'editedCategory' => $editedCategory
+            'videos' => $videos,
+            'categories' => $categories
         ]);
     }
 }

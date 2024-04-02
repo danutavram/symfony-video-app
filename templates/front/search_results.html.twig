@@ -23,7 +23,7 @@
 {{ knp_pagination_render(videos) }}
 {% endif %}
 {% endblock %}
-{% block customjavascripts %}
+{% block customjavascript %}
 {{parent()}}
 {% if app.user %}
 <script src="{{asset('assets/js/likes.js')}}"></script>

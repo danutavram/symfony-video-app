@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Utils\CategoryTreeAdminList;
+use App\Utils\CategoryTreeAdminOptionList;
 use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/admin/su/')]
@@ -96,5 +97,16 @@ class CategoriesController extends AbstractController
             return true;
         }
         return false;
+    }
+
+    public function getAllCategories(CategoryTreeAdminOptionList $categories, $editedCategory = null)
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $categories->getCategoryList($categories->buildTree());
+        return $this->render('admin/_all_categories.html.twig', [
+            'categories' => $categories,
+            'editedCategory' => $editedCategory
+        ]);
     }
 }

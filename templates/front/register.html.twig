@@ -33,7 +33,7 @@
       #}
       {{
         form_start(form, {
-          attr: { novalidate: "novalidate", class: "needs-validation" }
+          attr: {class: "needs-validation" }
         })
       }}
       <div class="row">
@@ -124,7 +124,7 @@
     {{ form_end(form) }}
   </div>
 </div>
-{% endblock %} {% block customjavascripts %}
+{% endblock %} {% block customjavascript %}
 <script>
   // Example starter JavaScript for disabling form submissions if there are invalid fields
   (function () {
