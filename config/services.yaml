@@ -38,11 +38,6 @@ services:
               arguments:
                   - '%env(REDIS_HOST)%'
                   - '%env(int:REDIS_PORT)%'
-            # If you need key prefix, uncomment line belows
-            # - method: setOption
-            #   arguments:
-            #       - !php/const Redis::OPT_PREFIX
-            #       - 'my_prefix'
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
@@ -53,3 +48,18 @@ services:
     App\Utils\LocalUploader:
         arguments:
             $targetDirectory: '%videos_directory%'
+
+    App\Listeners\NewVideoListener:
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+    twig.mime_body_renderer:
+        class: Symfony\Bridge\Twig\Mime\BodyRenderer
+        arguments: ['@twig']
+    Swift_Transport:
+        class: Swift_SmtpTransport
+        arguments:
+            - '%mailer_dsn%'
+    Swift_Mailer:
+        class: Swift_Mailer
+        public: true
+        arguments: ['Symfony\Bridge\Twig\Mime\BodyRendererInterface']
