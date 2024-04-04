@@ -43,7 +43,7 @@
                 </select>
             </form>
         </td>
-        <td><a href="{{ path('delete_video',{'video':video.id, 'path':video.vimeoId}) }}" onclick="delete_video(event);"><i class="fas fa-trash"></i></a></td>
+        <td><a href="{{ path('delete_video', {'video':video.id, 'path':video.vimeoId}) }}" onclick="delete_video(event);"><i class="fas fa-trash"></i></a></td>
 
         {% endif %}
       </tr>
@@ -55,10 +55,12 @@
 {% block customjavascript %}
 {{parent()}}
 <script>
-    function delete_video(e)
-    {
-    confirm('Are you sure?');
-    }
+  function delete_video(e) {
+      var confirmation = confirm('Are you sure?');
+      if (!confirmation) {
+          e.preventDefault(); // Evită acțiunea implicită a evenimentului (adresarea link-ului)
+      }
+  }
 </script>
 {% endblock %}
 

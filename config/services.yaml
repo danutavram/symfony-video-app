@@ -5,7 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    videos_directory: '%kernel.project_dir%/public/uploads/videos'
+    videos_directory: '%kernel.project_dir%/public/uploads/videos' #c_106
 
 services:
     # default configuration for services in *this* file
@@ -44,10 +44,11 @@ services:
             #       - !php/const Redis::OPT_PREFIX
             #       - 'my_prefix'
 
-    # c_90
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
             - '@Redis'
+
+    App\Utils\Interfaces\UploaderInterface: '@App\Utils\VimeoUploader'
 
     App\Utils\LocalUploader:
         arguments:
