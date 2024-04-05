@@ -52,14 +52,18 @@ services:
     App\Listeners\NewVideoListener:
         tags:
             - { name: doctrine.event_listener, event: postPersist }
+
     twig.mime_body_renderer:
         class: Symfony\Bridge\Twig\Mime\BodyRenderer
         arguments: ['@twig']
+
     Swift_Transport:
         class: Swift_SmtpTransport
         arguments:
             - '%mailer_dsn%'
+
     Swift_Mailer:
         class: Swift_Mailer
         public: true
         arguments: ['Symfony\Bridge\Twig\Mime\BodyRendererInterface']
+
